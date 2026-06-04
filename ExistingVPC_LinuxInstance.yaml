@@ -53,6 +53,8 @@ Mappings:
     RegionMap:
       us-east-1:
           ubuntuami: ami-02013f5b15758f4d4
+      us-east-2:
+          ubuntuami: ami-0209ee5cb40d1c54b
       us-west-2:
           ubuntuami: ami-03a1c8d65318aa1fc
 Conditions: {}
