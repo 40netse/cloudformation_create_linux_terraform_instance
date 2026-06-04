@@ -23,7 +23,7 @@ delete_stack ()
     tregion=$3
     if [ "$stack_name" != "" ] && [ "$tregion" != "" ]
     then
-        aws cloudformation delete-stack --stack-name "$stack_name" --region "$region" > /dev/null
+        aws cloudformation delete-stack --stack-name "$stack_name" --region "$tregion" > /dev/null
     fi
 }
 
@@ -49,10 +49,10 @@ wait_for_stack_deletion ()
     region=$3
 
     delete_complete=false
-    while [ "$delete_complete" == false ]
+    for (( c=1; c<=40; c++ ))
     do
         tfile=$(mktemp /tmp/foostack.XXXXXXXXX)
-        aws cloudformation list-stacks  --region "$region" \
+        aws cloudformation list-stacks --output text --region "$region" \
            --query "StackSummaries[?contains(StackId, '$stack_id')].{Name:StackName,Id:StackId,Status:StackStatus}" >$tfile
         tname=`cat $tfile |grep "$stack_name"|cut -f2 -d$'\t'`
         tarn=`cat $tfile |grep "$stack_name"|cut -f1 -d$'\t'`
@@ -61,13 +61,22 @@ wait_for_stack_deletion ()
         then
             rm -f $tfile
         fi
-        if [ "$tname" == "$stack_name" ] && [ "$tarn" == "$stack_id" ] && [ "$tstatus" == "DELETE_COMPLETE" ]
+        if [ "$tstatus" == "DELETE_COMPLETE" ]
         then
             delete_complete=true
-        else
-            sleep 15
+            break
+        elif [ "$tstatus" == "DELETE_FAILED" ]
+        then
+            echo "ERROR: $stack_name deletion failed (DELETE_FAILED). Manual cleanup required."
+            return 1
         fi
+        sleep 15
     done
+    if [ "$delete_complete" == false ]
+    then
+        echo "ERROR: Timed out waiting for $stack_name deletion."
+        return 1
+    fi
 }
 
 usage()
@@ -99,7 +108,7 @@ else
 fi
 
 tfile=$(mktemp /tmp/foostack.XXXXXXXXX)
-aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE --region "$region" \
+aws cloudformation list-stacks --output text --stack-status-filter CREATE_COMPLETE --region "$region" \
     --query "StackSummaries[*].{name:StackName,id:StackId}" >$tfile
 stack2_name=`cat $tfile |grep "$stack2"|cut -f2 -d$'\t'`
 stack2_id=`cat $tfile |grep "$stack2"|cut -f1 -d$'\t'`

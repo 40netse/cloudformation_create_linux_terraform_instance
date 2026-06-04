@@ -102,8 +102,14 @@ then
 fi
 
 echo
-echo "Created VPC = $VPC"
-echo "Subnet 1 = $SUBNET"
+echo "============================================"
+echo " Base VPC Stack: $stack1"
+echo "============================================"
+echo " Region:         $region"
+echo " Availability Zone: $aws_az"
+echo " VPC ID:         $VPC  ($vpc_cidr)"
+echo " Subnet ID:      $SUBNET  ($subnet_cidr)"
+echo "============================================"
 echo
 
 if [ "$KI_SPECIFIED" == true ]
@@ -148,18 +154,15 @@ fi
 #
 # Wait for template above to CREATE_COMPLETE
 #
-if [ "${KI_SPECIFIED}" == true ]
-then
-    for (( c=1; c<=50; c++ ))
-    do
-        count=`aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE --output text --region "$region" |grep "$stack2" |wc -l`
-        if [ "${count}" -ne "0" ]
-        then
-            break
-        fi
-        sleep $pause
-    done
-fi
+for (( c=1; c<=50; c++ ))
+do
+    count=`aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE --output text --region "$region" |grep "$stack2" |wc -l`
+    if [ "${count}" -ne "0" ]
+    then
+        break
+    fi
+    sleep $pause
+done
 
 tfile=$(mktemp /tmp/foostack5.XXXXXXXXX)
 aws cloudformation describe-stacks --stack-name "$stack2" --output text --region "$region" \
@@ -172,8 +175,17 @@ then
 fi
 
 echo
-echo "Linux instance ID = $wl1"
-echo "Linux Public IP Address = $wl1_ip"
+echo "============================================"
+echo " Linux Instance Stack: $stack2"
+echo "============================================"
+echo " Instance ID:    $wl1"
+echo " Instance Type:  $linux_instance_type"
+echo " Key Pair:       $key"
+echo " Public IP:      $wl1_ip"
+echo " Access CIDR:    $access"
+echo "--------------------------------------------"
+echo " SSH:  ssh -i ~/.ssh/${key}.pem ubuntu@${wl1_ip}"
+echo "============================================"
 echo
 
 #
