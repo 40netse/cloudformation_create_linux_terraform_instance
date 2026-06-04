@@ -13,11 +13,51 @@ Deploys an Ubuntu 22.04 EC2 instance pre-installed with the latest Terraform int
 - IAM role with EC2 and CloudWatch permissions
 - Security group allowing SSH access
 
+---
+
 ## Prerequisites
 
-- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) installed and configured (`aws configure`)
-- An EC2 key pair in the target region
+### All platforms
+
+- An EC2 key pair in the target region (create one in the AWS Console under EC2 → Key Pairs)
 - Sufficient IAM permissions to create VPCs, EC2 instances, IAM roles, and CloudFormation stacks
+
+### Linux / macOS
+
+- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) installed and configured:
+
+```bash
+aws configure
+```
+
+### Windows
+
+**1. Install the AWS CLI**
+
+Download and run the MSI installer from:  
+https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+
+After installation, open PowerShell and configure your credentials:
+
+```powershell
+aws configure
+```
+
+You will be prompted for:
+- AWS Access Key ID
+- AWS Secret Access Key
+- Default region (enter `us-east-1`)
+- Default output format (enter `json`)
+
+**2. Allow PowerShell scripts to run (one-time setup)**
+
+Windows blocks unsigned scripts by default. Run this once in PowerShell to allow locally downloaded scripts to execute:
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+This only affects scripts on your local machine — it does not lower security for scripts downloaded from the internet.
 
 ---
 
@@ -63,16 +103,10 @@ Edit the parameters file for your platform before deploying.
 
 ### Windows (PowerShell)
 
-Open PowerShell and run from the repo directory:
+Open PowerShell, navigate to the repo directory, and run:
 
 ```powershell
 .\build_stack.ps1
-```
-
-If you see an execution policy error, allow local scripts first (one-time):
-
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
 | Flag | Description |
@@ -119,19 +153,43 @@ Deploying terraform-linux-dev-linux Template
 
 ## Connect via SSH
 
+The public IP and SSH command are printed at the end of the build script. Allow a minute or two after the stack completes for the UserData script to finish installing Terraform.
+
+### Linux / macOS
+
 ```bash
-ssh -i <key-pair-name>.pem ubuntu@<public-ip>
+ssh -i ~/.ssh/<key-pair-name>.pem ubuntu@<public-ip>
 ```
 
-The public IP is printed at the end of the build script. Allow a minute or two after the stack completes for the UserData script to finish installing Terraform.
+### Windows
 
-Verify Terraform is installed:
+**Option 1 — Built-in OpenSSH (Windows 10/11, recommended)**
+
+Windows 10 and Windows 11 include a built-in OpenSSH client. Open PowerShell and connect directly using your `.pem` key file:
+
+```powershell
+ssh -i C:\path\to\<key-pair-name>.pem ubuntu@<public-ip>
+```
+
+If OpenSSH is not installed, enable it via **Settings → Apps → Optional Features → Add a feature → OpenSSH Client**.
+
+**Option 2 — PuTTY**
+
+PuTTY uses its own `.ppk` key format instead of `.pem`. Before connecting you must convert the key:
+
+1. Download and install [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html) (includes PuTTYgen)
+2. Open **PuTTYgen**, click **Load**, select your `.pem` file (change the file filter to *All Files*)
+3. Click **Save private key** to export a `.ppk` file
+4. Open **PuTTY**, enter the public IP as the hostname, then go to **Connection → SSH → Auth → Credentials** and browse to your `.ppk` file
+5. Log in as user `ubuntu`
+
+### Verify Terraform is installed
+
+Once connected:
 
 ```bash
 terraform version
 ```
-
-> **Note:** Windows users can SSH using the built-in OpenSSH client (Windows 10/11) or a tool like PuTTY. If using PuTTY, convert the `.pem` key to `.ppk` format using PuTTYgen first.
 
 ---
 
