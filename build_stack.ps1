@@ -91,6 +91,9 @@ if ((Get-StackStatus -StackName $stack2 -Region $region) -eq 0) {
             ParameterKey=KeyPair,ParameterValue=$key `
             ParameterKey=InstanceType,ParameterValue=$linuxInstanceType `
             ParameterKey=CIDRForInstanceAccess,ParameterValue=$access `
+            ParameterKey=ManagementCIDR1,ParameterValue=$managementCIDR1 `
+            ParameterKey=ManagementCIDR2,ParameterValue=$managementCIDR2 `
+            ParameterKey=ManagementCIDR3,ParameterValue=$managementCIDR3 `
             ParameterKey=AZForInstance1,ParameterValue=$awsAz | Out-Null
 }
 

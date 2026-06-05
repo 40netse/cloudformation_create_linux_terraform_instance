@@ -148,6 +148,9 @@ then
                     ParameterKey=KeyPair,ParameterValue="$key" \
                     ParameterKey=InstanceType,ParameterValue="$linux_instance_type" \
                     ParameterKey=CIDRForInstanceAccess,ParameterValue="$access" \
+                    ParameterKey=ManagementCIDR1,ParameterValue="$management_cidr1" \
+                    ParameterKey=ManagementCIDR2,ParameterValue="$management_cidr2" \
+                    ParameterKey=ManagementCIDR3,ParameterValue="$management_cidr3" \
                     ParameterKey=AZForInstance1,ParameterValue="$aws_az" >/dev/null
 fi
 

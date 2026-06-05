@@ -12,3 +12,6 @@ subnet_cidr="10.0.0.0/24"
 linux_instance_type=c4.large
 key=mdw-poc-common
 access="0.0.0.0/0"
+management_cidr1="208.91.115.30/32"
+management_cidr2="76.184.215.100/32"
+management_cidr3="159.48.172.13/32"
