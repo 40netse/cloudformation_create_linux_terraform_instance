@@ -234,6 +234,73 @@ terraform version
 
 ---
 
+## Fortinet UI for Terraform
+
+The instance comes pre-installed with Node.js and `uv`, and the security group allows access to port `3000` from the management CIDRs. This lets you run the [Fortinet UI for Terraform](https://fortinetcloudcse.github.io/fortinet-ui-terraform/) — a web-based UI that automatically generates forms from annotated Terraform templates, letting you deploy FortiGate infrastructure without manually editing `.tfvars` files.
+
+Full workshop documentation: **https://fortinetcloudcse.github.io/fortinet-ui-terraform/**
+
+### First-time setup
+
+SSH into the instance, then clone and set up the repo:
+
+```bash
+git clone <fortinet-ui-terraform-repo-url>
+cd fortinet-ui-terraform/ui
+./SETUP.sh
+```
+
+`SETUP.sh` installs Python dependencies via `venv` and Node.js dependencies via `npm`. This only needs to be run once.
+
+### Start the UI
+
+```bash
+cd fortinet-ui-terraform/ui
+./RESTART.sh
+```
+
+`RESTART.sh` starts both services and waits for them to be healthy:
+- **Backend** (FastAPI) on `localhost:8000` — not exposed externally
+- **Frontend** (Vite) on port `3000` — accessible from your browser
+
+### Access the UI
+
+Open a browser and navigate to:
+
+```
+http://<instance-public-ip>:3000
+```
+
+### Useful commands
+
+```bash
+# View logs
+tail -f ~/fortinet-ui-terraform/logs/backend.log
+tail -f ~/fortinet-ui-terraform/logs/frontend.log
+
+# Stop all services
+pkill -f 'vite'
+pkill -f 'uvicorn'
+
+# Restart after a reboot
+cd ~/fortinet-ui-terraform/ui && ./RESTART.sh
+```
+
+### Security notes
+
+- Port `3000` is open only to the management CIDRs defined in the parameters file — the UI is not publicly accessible
+- Port `8000` (backend) is never exposed externally; the Vite dev server proxies all `/api` requests to `localhost:8000`
+- The instance IAM role provides the AWS credentials the UI needs for live dropdowns (regions, keypairs, VPCs) — no `aws configure` needed on the instance
+
+### Workshop reference
+
+The Fortinet UI for Terraform workshop covers:
+- [Introduction and architecture](https://fortinetcloudcse.github.io/fortinet-ui-terraform/1_introduction/)
+- [Working in the UI](https://fortinetcloudcse.github.io/fortinet-ui-terraform/2_getting_started/2_1_working_in_the_ui/)
+- [Example templates](https://fortinetcloudcse.github.io/fortinet-ui-terraform/3_example_templates/)
+
+---
+
 ## Teardown
 
 ### Linux / macOS
