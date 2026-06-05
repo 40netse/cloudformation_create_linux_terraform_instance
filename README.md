@@ -68,40 +68,56 @@ Edit the parameters file for your platform before deploying.
 **Linux/macOS** — `stack_parameters.sh`  
 **Windows** — `stack_parameters.ps1`
 
-| Variable | Default | Description |
-|---|---|---|
-| `region` | `us-east-1` | AWS region to deploy into |
-| `aws_az` | `us-east-1a` | Availability zone for subnet and instance |
-| `vpc_cidr` | `10.0.0.0/16` | CIDR block for the VPC |
-| `subnet_cidr` | `10.0.0.0/24` | CIDR block for the public subnet |
-| `linux_instance_type` | `c4.large` | EC2 instance type |
-| `key` | `mdw-poc-common` | EC2 key pair name (must exist in the target region) |
-| `access` | `0.0.0.0/0` | CIDR allowed SSH access — restrict this for production |
-| `management_cidr1` / `$managementCIDR1` | `""` | First management IP (SSH + ICMP) — required |
-| `management_cidr2` / `$managementCIDR2` | `""` | Second management IP (SSH + ICMP) — leave blank if not needed |
-| `management_cidr3` / `$managementCIDR3` | `""` | Third management IP (SSH + ICMP) — leave blank if not needed |
-
-### Management CIDRs
-
-The management security group allows SSH and ICMP from up to three public IP addresses. Set these in the parameters file before deploying. CIDRs must be in `/32` notation for individual IPs.
-
-**Linux/macOS** (`stack_parameters.sh`):
+### Linux / macOS (`stack_parameters.sh`)
 
 ```bash
-management_cidr1="203.0.113.10/32"   # required
-management_cidr2="203.0.113.20/32"   # optional — leave blank to skip
-management_cidr3=""                   # optional — leave blank to skip
+region=us-east-1           # AWS region to deploy into
+aws_az=us-east-1a          # Availability zone for subnet and instance
+
+vpc_cidr="10.0.0.0/16"    # CIDR block for the VPC
+subnet_cidr="10.0.0.0/24" # CIDR block for the public subnet
+linux_instance_type=c4.large                 # EC2 instance type
+key=your-keypair-name                        # EC2 key pair name (must exist in the target region)
+access="0.0.0.0/0"                           # CIDR allowed SSH access — restrict for production
+
+management_cidr1="203.0.113.10/32"   # required — SSH and ICMP allowed from this IP
+management_cidr2="203.0.113.20/32"   # optional — leave blank ("") to skip
+management_cidr3=""                   # optional — leave blank ("") to skip
 ```
 
-**Windows** (`stack_parameters.ps1`):
+### Windows (`stack_parameters.ps1`)
 
 ```powershell
-$managementCIDR1 = "203.0.113.10/32"   # required
-$managementCIDR2 = "203.0.113.20/32"   # optional — leave blank to skip
-$managementCIDR3 = ""                   # optional — leave blank to skip
+$region            = "us-east-1"    # AWS region to deploy into
+$awsAz             = "us-east-1a"   # Availability zone for subnet and instance
+
+$vpcCidr           = "10.0.0.0/16"  # CIDR block for the VPC
+$subnetCidr        = "10.0.0.0/24"  # CIDR block for the public subnet
+$linuxInstanceType = "c4.large"                  # EC2 instance type
+$key               = "your-keypair-name"         # EC2 key pair name (must exist in the target region)
+$access            = "0.0.0.0/0"                 # CIDR allowed SSH access — restrict for production
+
+$managementCIDR1   = "203.0.113.10/32"   # required — SSH and ICMP allowed from this IP
+$managementCIDR2   = "203.0.113.20/32"   # optional — leave blank ("") to skip
+$managementCIDR3   = ""                   # optional — leave blank ("") to skip
 ```
 
-> **Note:** `management_cidr1` / `$managementCIDR1` must always have a value. `management_cidr2` and `management_cidr3` can be left as `""` and their security group rules will be omitted automatically.
+### Parameter reference
+
+| Parameter | Description |
+|---|---|
+| `region` / `$region` | AWS region — must match an entry in the template's RegionMap (see AMIs section) |
+| `aws_az` / `$awsAz` | Availability zone — must be within the chosen region (e.g. `us-east-1a`) |
+| `vpc_cidr` / `$vpcCidr` | VPC CIDR block |
+| `subnet_cidr` / `$subnetCidr` | Public subnet CIDR — must fall within the VPC CIDR |
+| `linux_instance_type` / `$linuxInstanceType` | EC2 instance type |
+| `key` / `$key` | EC2 key pair name — must already exist in the target region |
+| `access` / `$access` | CIDR for the general SSH security group — restrict to your IP for production |
+| `management_cidr1` / `$managementCIDR1` | First public IP allowed SSH and ICMP — **required**, use `/32` notation |
+| `management_cidr2` / `$managementCIDR2` | Second public IP — optional, leave as `""` to omit |
+| `management_cidr3` / `$managementCIDR3` | Third public IP — optional, leave as `""` to omit |
+
+> **Note:** `management_cidr2` and `management_cidr3` can be left as `""` — their security group rules are automatically omitted by CloudFormation when blank.
 
 ---
 
