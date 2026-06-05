@@ -77,6 +77,31 @@ Edit the parameters file for your platform before deploying.
 | `linux_instance_type` | `c4.large` | EC2 instance type |
 | `key` | `mdw-poc-common` | EC2 key pair name (must exist in the target region) |
 | `access` | `0.0.0.0/0` | CIDR allowed SSH access — restrict this for production |
+| `management_cidr1` / `$managementCIDR1` | `""` | First management IP (SSH + ICMP) — required |
+| `management_cidr2` / `$managementCIDR2` | `""` | Second management IP (SSH + ICMP) — leave blank if not needed |
+| `management_cidr3` / `$managementCIDR3` | `""` | Third management IP (SSH + ICMP) — leave blank if not needed |
+
+### Management CIDRs
+
+The management security group allows SSH and ICMP from up to three public IP addresses. Set these in the parameters file before deploying. CIDRs must be in `/32` notation for individual IPs.
+
+**Linux/macOS** (`stack_parameters.sh`):
+
+```bash
+management_cidr1="203.0.113.10/32"   # required
+management_cidr2="203.0.113.20/32"   # optional — leave blank to skip
+management_cidr3=""                   # optional — leave blank to skip
+```
+
+**Windows** (`stack_parameters.ps1`):
+
+```powershell
+$managementCIDR1 = "203.0.113.10/32"   # required
+$managementCIDR2 = "203.0.113.20/32"   # optional — leave blank to skip
+$managementCIDR3 = ""                   # optional — leave blank to skip
+```
+
+> **Note:** `management_cidr1` / `$managementCIDR1` must always have a value. `management_cidr2` and `management_cidr3` can be left as `""` and their security group rules will be omitted automatically.
 
 ---
 
