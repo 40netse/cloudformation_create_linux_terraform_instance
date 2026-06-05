@@ -188,6 +188,7 @@ echo " Public IP:      $wl1_ip"
 echo " Access CIDR:    $access"
 echo "--------------------------------------------"
 echo " SSH:  ssh -i ~/.ssh/${key}.pem ubuntu@${wl1_ip}"
+echo " Web UI: http://${wl1_ip}:3000"
 echo "============================================"
 echo
 
