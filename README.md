@@ -245,7 +245,7 @@ Full workshop documentation: **https://fortinetcloudcse.github.io/fortinet-ui-te
 SSH into the instance, then clone and set up the repo:
 
 ```bash
-git clone <fortinet-ui-terraform-repo-url>
+git clone https://github.com/FortinetCloudCSE/fortinet-ui-terraform
 cd fortinet-ui-terraform/ui
 ./SETUP.sh
 ```
