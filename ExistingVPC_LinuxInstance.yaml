@@ -129,11 +129,16 @@ Resources:
     Properties:
       VpcId:
         Ref: VPCID
-      GroupDescription: Allow SSH and Web
+      GroupDescription: Allow SSH and Web UI
       SecurityGroupIngress:
       - IpProtocol: TCP
         FromPort: '22'
         ToPort: '22'
+        CidrIp:
+          Ref: CIDRForInstanceAccess
+      - IpProtocol: TCP
+        FromPort: '3000'
+        ToPort: '3000'
         CidrIp:
           Ref: CIDRForInstanceAccess
   ManagementSecurityGroup:
@@ -153,6 +158,11 @@ Resources:
         FromPort: '-1'
         ToPort: '-1'
         CidrIp: !Ref ManagementCIDR1
+      - Description: Web UI from ManagementCIDR1
+        IpProtocol: tcp
+        FromPort: '3000'
+        ToPort: '3000'
+        CidrIp: !Ref ManagementCIDR1
       - !If
         - ManagementCIDR2Provided
         - Description: SSH from ManagementCIDR2
@@ -167,6 +177,14 @@ Resources:
           IpProtocol: icmp
           FromPort: '-1'
           ToPort: '-1'
+          CidrIp: !Ref ManagementCIDR2
+        - !Ref AWS::NoValue
+      - !If
+        - ManagementCIDR2Provided
+        - Description: Web UI from ManagementCIDR2
+          IpProtocol: tcp
+          FromPort: '3000'
+          ToPort: '3000'
           CidrIp: !Ref ManagementCIDR2
         - !Ref AWS::NoValue
       - !If
@@ -185,6 +203,14 @@ Resources:
           ToPort: '-1'
           CidrIp: !Ref ManagementCIDR3
         - !Ref AWS::NoValue
+      - !If
+        - ManagementCIDR3Provided
+        - Description: Web UI from ManagementCIDR3
+          IpProtocol: tcp
+          FromPort: '3000'
+          ToPort: '3000'
+          CidrIp: !Ref ManagementCIDR3
+        - !Ref AWS::NoValue
   LinuxInstance:
     Type: AWS::EC2::Instance
     Properties:
@@ -201,6 +227,9 @@ Resources:
            curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
            echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" > /etc/apt/sources.list.d/hashicorp.list
            apt-get update && apt-get install -y terraform
+           curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
+           apt-get install -y nodejs
+           curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin sh
       InstanceType:
         Ref: InstanceType
       KeyName:
