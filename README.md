@@ -240,40 +240,35 @@ The instance comes pre-installed with Node.js and `uv`, and the security group a
 
 Full workshop documentation: **https://fortinetcloudcse.github.io/fortinet-ui-terraform/**
 
-### First-time setup
+### Auto-start on deployment
 
-SSH into the instance, then clone and set up the repo:
+The UI starts automatically — no manual steps required. UserData handles everything on first boot:
 
-```bash
-git clone https://github.com/FortinetCloudCSE/fortinet-ui-terraform
-cd fortinet-ui-terraform/ui
-./SETUP.sh
-```
+1. Clones `https://github.com/FortinetCloudCSE/fortinet-ui-terraform` to `/home/ubuntu/`
+2. Runs `SETUP.sh` to install Python and Node.js dependencies
+3. Runs `RESTART.sh` to start the backend and frontend
+4. Registers a `@reboot` cron job so the UI restarts automatically if the instance is rebooted
 
-`SETUP.sh` installs Python dependencies via `venv` and Node.js dependencies via `npm`. This only needs to be run once.
-
-### Start the UI
-
-```bash
-cd fortinet-ui-terraform/ui
-./RESTART.sh
-```
-
-`RESTART.sh` starts both services and waits for them to be healthy:
-- **Backend** (FastAPI) on `localhost:8000` — not exposed externally
-- **Frontend** (Vite) on port `3000` — accessible from your browser
-
-### Access the UI
-
-Open a browser and navigate to:
+By the time CloudFormation reports `CREATE_COMPLETE`, allow a few minutes for UserData to finish, then open a browser to:
 
 ```
 http://<instance-public-ip>:3000
 ```
 
+### Services
+
+`RESTART.sh` starts two services:
+- **Backend** (FastAPI/uvicorn) on `localhost:8000` — not exposed externally; Vite proxies all `/api` requests to it
+- **Frontend** (Vite) on port `3000` — accessible from your browser
+
 ### Useful commands
 
+If you need to manually manage the UI after SSHing in:
+
 ```bash
+# Restart both services
+cd ~/fortinet-ui-terraform/ui && ./RESTART.sh
+
 # View logs
 tail -f ~/fortinet-ui-terraform/logs/backend.log
 tail -f ~/fortinet-ui-terraform/logs/frontend.log
@@ -281,9 +276,6 @@ tail -f ~/fortinet-ui-terraform/logs/frontend.log
 # Stop all services
 pkill -f 'vite'
 pkill -f 'uvicorn'
-
-# Restart after a reboot
-cd ~/fortinet-ui-terraform/ui && ./RESTART.sh
 ```
 
 ### Security notes
