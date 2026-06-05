@@ -219,7 +219,7 @@ Resources:
         Fn::Base64: |
            #!/bin/bash
            apt-get update -y
-           apt-get install -y gnupg software-properties-common curl unzip
+           apt-get install -y gnupg software-properties-common curl unzip lsof
            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
            unzip /tmp/awscliv2.zip -d /tmp
            /tmp/aws/install
@@ -230,6 +230,9 @@ Resources:
            curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
            apt-get install -y nodejs
            curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin sh
+           sudo -u ubuntu bash -c 'cd /home/ubuntu && git clone https://github.com/FortinetCloudCSE/fortinet-ui-terraform && cd fortinet-ui-terraform/ui && ./SETUP.sh'
+           (crontab -u ubuntu -l 2>/dev/null; echo "@reboot /home/ubuntu/fortinet-ui-terraform/ui/RESTART.sh") | crontab -u ubuntu -
+           sudo -u ubuntu bash -c 'cd /home/ubuntu/fortinet-ui-terraform/ui && ./RESTART.sh'
       InstanceType:
         Ref: InstanceType
       KeyName:
