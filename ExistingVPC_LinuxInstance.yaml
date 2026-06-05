@@ -72,7 +72,9 @@ Mappings:
           ubuntuami: ami-0209ee5cb40d1c54b
       us-west-2:
           ubuntuami: ami-03a1c8d65318aa1fc
-Conditions: {}
+Conditions:
+  ManagementCIDR2Provided: !Not [!Equals [!Ref ManagementCIDR2, ""]]
+  ManagementCIDR3Provided: !Not [!Equals [!Ref ManagementCIDR3, ""]]
 Resources:
   InstanceRole:
     Type: AWS::IAM::Role
@@ -149,26 +151,38 @@ Resources:
         FromPort: '-1'
         ToPort: '-1'
         CidrIp: !Ref ManagementCIDR1
-      - Description: SSH from ManagementCIDR2
-        IpProtocol: tcp
-        FromPort: '22'
-        ToPort: '22'
-        CidrIp: !Ref ManagementCIDR2
-      - Description: ICMP from ManagementCIDR2
-        IpProtocol: icmp
-        FromPort: '-1'
-        ToPort: '-1'
-        CidrIp: !Ref ManagementCIDR2
-      - Description: SSH from ManagementCIDR3
-        IpProtocol: tcp
-        FromPort: '22'
-        ToPort: '22'
-        CidrIp: !Ref ManagementCIDR3
-      - Description: ICMP from ManagementCIDR3
-        IpProtocol: icmp
-        FromPort: '-1'
-        ToPort: '-1'
-        CidrIp: !Ref ManagementCIDR3
+      - !If
+        - ManagementCIDR2Provided
+        - Description: SSH from ManagementCIDR2
+          IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: !Ref ManagementCIDR2
+        - !Ref AWS::NoValue
+      - !If
+        - ManagementCIDR2Provided
+        - Description: ICMP from ManagementCIDR2
+          IpProtocol: icmp
+          FromPort: '-1'
+          ToPort: '-1'
+          CidrIp: !Ref ManagementCIDR2
+        - !Ref AWS::NoValue
+      - !If
+        - ManagementCIDR3Provided
+        - Description: SSH from ManagementCIDR3
+          IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: !Ref ManagementCIDR3
+        - !Ref AWS::NoValue
+      - !If
+        - ManagementCIDR3Provided
+        - Description: ICMP from ManagementCIDR3
+          IpProtocol: icmp
+          FromPort: '-1'
+          ToPort: '-1'
+          CidrIp: !Ref ManagementCIDR3
+        - !Ref AWS::NoValue
   LinuxInstance:
     Type: AWS::EC2::Instance
     Properties:
