@@ -262,6 +262,7 @@ The Linux instance template includes AMI mappings for both supported regions:
 |---|---|---|
 | `us-east-1` | `ami-02013f5b15758f4d4` | Ubuntu 22.04 LTS (Jammy), 2026-06-02 |
 | `us-east-2` | `ami-0209ee5cb40d1c54b` | Ubuntu 22.04 LTS (Jammy), 2026-06-02 |
+| `us-west-1` | `ami-083532ada23c5c24c` | Ubuntu 22.04 LTS (Jammy), 2026-06-02 |
 | `us-west-2` | `ami-03a1c8d65318aa1fc` | Ubuntu 22.04 LTS (Jammy), 2026-06-02 |
 
 To add another region, add an entry to the `RegionMap` in `ExistingVPC_LinuxInstance.yaml` and update the parameters file for your platform.
