@@ -147,7 +147,6 @@ then
                     ParameterKey=Public1Subnet,ParameterValue="$SUBNET" \
                     ParameterKey=KeyPair,ParameterValue="$key" \
                     ParameterKey=InstanceType,ParameterValue="$linux_instance_type" \
-                    ParameterKey=CIDRForInstanceAccess,ParameterValue="$access" \
                     ParameterKey=ManagementCIDR1,ParameterValue="$management_cidr1" \
                     ParameterKey=ManagementCIDR2,ParameterValue="$management_cidr2" \
                     ParameterKey=ManagementCIDR3,ParameterValue="$management_cidr3" \
@@ -185,7 +184,6 @@ echo " Instance ID:    $wl1"
 echo " Instance Type:  $linux_instance_type"
 echo " Key Pair:       $key"
 echo " Public IP:      $wl1_ip"
-echo " Access CIDR:    $access"
 echo "--------------------------------------------"
 echo " SSH:  ssh -i ~/.ssh/${key}.pem ubuntu@${wl1_ip}"
 echo " Web UI: http://${wl1_ip}:3000"

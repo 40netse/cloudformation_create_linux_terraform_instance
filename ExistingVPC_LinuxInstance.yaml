@@ -11,7 +11,6 @@ Metadata:
       - AZForInstance1
       - Public1Subnet
       - KeyPair
-      - CIDRForInstanceAccess
       - ManagementCIDR1
       - ManagementCIDR2
       - ManagementCIDR3
@@ -29,10 +28,6 @@ Parameters:
   Public1Subnet:
     Type: AWS::EC2::Subnet::Id
     Description: Enter the value of the Public1 subnet
-  CIDRForInstanceAccess:
-    Type: String
-    Default: 0.0.0.0/0
-    Description: Enter the CIDR from which instance needs to be accessed
   ManagementCIDR1:
     Type: String
     Default: 208.91.115.30/32
@@ -124,23 +119,6 @@ Resources:
       Path: "/"
       Roles:
       - Ref: InstanceRole
-  SecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      VpcId:
-        Ref: VPCID
-      GroupDescription: Allow SSH and Web UI
-      SecurityGroupIngress:
-      - IpProtocol: TCP
-        FromPort: '22'
-        ToPort: '22'
-        CidrIp:
-          Ref: CIDRForInstanceAccess
-      - IpProtocol: TCP
-        FromPort: '3000'
-        ToPort: '3000'
-        CidrIp:
-          Ref: CIDRForInstanceAccess
   ManagementSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -246,7 +224,6 @@ Resources:
       - AssociatePublicIpAddress: 'true'
         DeviceIndex: '0'
         GroupSet:
-        - Ref: SecurityGroup
         - Ref: ManagementSecurityGroup
         SubnetId:
           Ref: Public1Subnet
