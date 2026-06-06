@@ -219,7 +219,8 @@ Resources:
         Fn::Base64: |
            #!/bin/bash
            apt-get update -y
-           apt-get install -y gnupg software-properties-common curl unzip lsof python3.10-venv
+           apt-get install -y gnupg software-properties-common curl unzip lsof python3.11 python3.11-venv
+           update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 2
            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
            unzip /tmp/awscliv2.zip -d /tmp
            /tmp/aws/install
